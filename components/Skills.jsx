@@ -1,10 +1,39 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHtml5, FaCss3Alt, FaJs, FaReact, FaNodeJs, FaJava, FaMicrochip, FaBolt } from 'react-icons/fa';
 import { SiNextdotjs, SiTailwindcss, SiBootstrap, SiMysql, SiAutodesk, SiProteus, SiAutocad } from 'react-icons/si';
 import { useLanguage } from './LanguageContext';
 
 export default function Skills() {
  const { language } = useLanguage();
+ const [skills, setSkills] = useState({
+  frontendSkills: [],
+  backendSkills: [],
+  electricElectronicSkills: []
+ });
+ const [loading, setLoading] = useState(true);
+ const [error, setError] = useState(null);
+
+ useEffect(() => {       // Veritabanından verileri çek (dil seçimine göre)
+  const fetchSkills = async () => {
+   try {
+    setLoading(true);
+    const response = await fetch(`/api/skills?lang=${language}`);    // Dil parametresini API çağrısına ekle
+
+    if (!response.ok) {
+     throw new Error(`Veri çekilemedi: ${response.statusText}`);
+    }
+    const data = await response.json();
+    setSkills(data);
+    setLoading(false);
+   } catch (err) {
+    console.error('Veri çekme hatası:', err);
+    setError(err.message);
+    setLoading(false);
+   }
+  };
+
+  fetchSkills();
+ }, [language]); // Dil değiştiğinde verileri yeniden çek
 
  const content = {
   tr: {
@@ -13,24 +42,9 @@ export default function Skills() {
    frontend: "Önyüz (Frontend)",
    backend: "Arkayüz (Backend)",
    electrical: "Elektrik & Elektronik",
-   skills: {
-    "PCB Tasarımı": "PCB Tasarımı",
-    "Elektrik Tesisatı": "Elektrik Tesisatı",
-    "Autocad": "Autocad",
-    "Proteus": "Proteus",
-    "Autodesk Eagle": "Autodesk Eagle",
-    "Nesne Yönelimli Programlama": "Nesne Yönelimli Programlama",
-    "HTML5": "HTML5",
-    "CSS3": "CSS3",
-    "JavaScript": "JavaScript",
-    "React.JS": "React.JS",
-    "Tailwind CSS": "Tailwind CSS",
-    "Bootstrap": "Bootstrap",
-    "Next.JS": "Next.JS",
-    "Java": "Java",
-    "MySQL": "MySQL",
-    "NodeJs": "NodeJs"
-   }
+   loading: "Yetenekler yükleniyor...",
+   error: "Hata: ",
+   dbErrorMessage: "Veritabanı bağlantısı kontrol edilmeli."
   },
   en: {
    title: "Skills",
@@ -38,81 +52,77 @@ export default function Skills() {
    frontend: "Frontend",
    backend: "Backend",
    electrical: "Electrical & Electronics",
-   skills: {
-    "PCB Tasarımı": "PCB Design",
-    "Elektrik Tesisatı": "Electrical Installation",
-    "Autocad": "Autocad",
-    "Proteus": "Proteus",
-    "Autodesk Eagle": "Autodesk Eagle",
-    "Nesne Yönelimli Programlama": "Object Oriented Programming",
-    "HTML5": "HTML5",
-    "CSS3": "CSS3",
-    "JavaScript": "JavaScript",
-    "React.JS": "React.JS",
-    "Tailwind CSS": "Tailwind CSS",
-    "Bootstrap": "Bootstrap",
-    "Next.JS": "Next.JS",
-    "Java": "Java",
-    "MySQL": "MySQL",
-    "NodeJs": "NodeJs"
-   }
+   loading: "Loading skills...",
+   error: "Error: ",
+   dbErrorMessage: "Database connection should be checked."
   }
  };
-
- const frontendSkills = [
-  { name: "HTML5", percentage: 90, icon: <FaHtml5 className="text-orange-500 text-xl mr-2" /> },
-  { name: "CSS3", percentage: 90, icon: <FaCss3Alt className="text-blue-500 text-xl mr-2" /> },
-  { name: "JavaScript", percentage: 75, icon: <FaJs className="text-yellow-400 text-xl mr-2" /> },
-  { name: "React.JS", percentage: 50, icon: <FaReact className="text-blue-400 text-xl mr-2" /> },
-  { name: "Tailwind CSS", percentage: 70, icon: <SiTailwindcss className="text-cyan-400 text-xl mr-2" /> },
-  { name: "Bootstrap", percentage: 70, icon: <SiBootstrap className="text-purple-500 text-xl mr-2" /> }
- ];
- const backendSkills = [
-  { name: "JavaScript", percentage: 50, icon: <FaJs className="text-yellow-400 text-xl mr-2" /> },
-  { name: "Next.JS", percentage: 50, icon: <SiNextdotjs className="text-white text-xl mr-2" /> },
-  { name: "Java", percentage: 50, icon: <FaJava className="text-red-500 text-xl mr-2" /> },
-  { name: "Nesne Yönelimli Programlama", percentage: 50, icon: <FaJava className="text-red-500 text-xl mr-2" /> },
-  { name: "MySQL", percentage: 35, icon: <SiMysql className="text-blue-300 text-xl mr-2" /> },
-  { name: "NodeJs", percentage: 15, icon: <FaNodeJs className="text-green-400 text-xl mr-2" /> }
- ];
- const electricElectronicSkills = [
-  { name: "PCB Tasarımı", percentage: 75, icon: <FaMicrochip className="text-green-400 text-xl mr-2" /> },
-  { name: "Elektrik Tesisatı", percentage: 50, icon: <FaBolt className="text-yellow-300 text-xl mr-2" /> },
-  { name: "Autocad", percentage: 50, icon: <SiAutocad className="text-red-400 text-xl mr-2" /> },
-  { name: "Proteus", percentage: 50, icon: <SiProteus className="text-blue-300 text-xl mr-2" /> },
-  { name: "Autodesk Eagle", percentage: 50, icon: <SiAutodesk className="text-gray-300 text-xl mr-2" /> }
- ];
 
  const animationStyles = `
-  @keyframes slideInFromLeft {
-    0% {
-      transform: translateX(-100%);
-      opacity: 0;
+    @keyframes slideInFromLeft {
+      0% {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
     }
-    100% {
-      transform: translateX(0);
-      opacity: 1;
+    
+    .animate-card-1 {
+      animation: slideInFromLeft 0.8s ease-out forwards;
     }
-  }
-  
-  .animate-card-1 {
-    animation: slideInFromLeft 0.8s ease-out forwards;
-  }
-  
-  .animate-card-2 {
-    animation: slideInFromLeft 0.8s ease-out 0.2s forwards;
-    opacity: 0; /* Start with opacity 0 */
-  }
-  
-  .animate-card-3 {
-    animation: slideInFromLeft 0.8s ease-out 0.4s forwards;
-    opacity: 0; /* Start with opacity 0 */
-  }
- `;
+    
+    .animate-card-2 {
+      animation: slideInFromLeft 0.8s ease-out 0.2s forwards;
+      opacity: 0; /* Start with opacity 0 */
+    }
+    
+    .animate-card-3 {
+      animation: slideInFromLeft 0.8s ease-out 0.4s forwards;
+      opacity: 0; /* Start with opacity 0 */
+    }
+  `;
 
- const translateSkill = (originalName) => {
-  return content[language].skills[originalName] || originalName;
+ // İkon bileşenini döndüren fonksiyon
+ const getIconComponent = (iconName) => {
+  const iconComponents = {
+   FaHtml5: <FaHtml5 className="text-orange-500 text-xl mr-2" />,
+   FaCss3Alt: <FaCss3Alt className="text-blue-500 text-xl mr-2" />,
+   FaJs: <FaJs className="text-yellow-400 text-xl mr-2" />,
+   FaReact: <FaReact className="text-blue-400 text-xl mr-2" />,
+   SiTailwindcss: <SiTailwindcss className="text-cyan-400 text-xl mr-2" />,
+   SiBootstrap: <SiBootstrap className="text-purple-500 text-xl mr-2" />,
+   SiNextdotjs: <SiNextdotjs className="text-white text-xl mr-2" />,
+   FaJava: <FaJava className="text-red-500 text-xl mr-2" />,
+   SiMysql: <SiMysql className="text-blue-300 text-xl mr-2" />,
+   FaNodeJs: <FaNodeJs className="text-green-400 text-xl mr-2" />,
+   FaMicrochip: <FaMicrochip className="text-green-400 text-xl mr-2" />,
+   FaBolt: <FaBolt className="text-yellow-300 text-xl mr-2" />,
+   SiAutocad: <SiAutocad className="text-red-400 text-xl mr-2" />,
+   SiProteus: <SiProteus className="text-blue-300 text-xl mr-2" />,
+   SiAutodesk: <SiAutodesk className="text-gray-300 text-xl mr-2" />
+  };
+  return iconComponents[iconName] || null;
  };
+
+ if (loading) return (
+  <section id="skills" className="py-30 bg-gray-800">
+   <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-12">
+    <p className="text-white">{content[language].loading}</p>
+   </div>
+  </section>
+ );
+
+ if (error) return (
+  <section id="skills" className="py-30 bg-gray-800">
+   <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-12">
+    <p className="text-red-400">{content[language].error}{error}</p>
+    <p className="text-white mt-2">{content[language].dbErrorMessage}</p>
+   </div>
+  </section>
+ );
 
  return (
   <section id="skills" className="py-30 bg-gray-800">
@@ -139,12 +149,12 @@ export default function Skills() {
       </div>
 
       <div className="space-y-4">
-       {frontendSkills.map((skill) => (
-        <div key={skill.name}>
+       {skills.frontendSkills.map((skill, index) => (
+        <div key={`frontend-${index}`}>
          <div className="flex justify-between mb-1 items-center">
           <div className="flex items-center">
-           {skill.icon}
-           <span className="text-gray-400">{translateSkill(skill.name)}</span>
+           {getIconComponent(skill.icon)}
+           <span className="text-gray-400">{skill.name}</span>
           </div>
           <span className="text-blue-700 font-bold">{skill.percentage}%</span>
          </div>
@@ -171,12 +181,12 @@ export default function Skills() {
       </div>
 
       <div className="space-y-4">
-       {backendSkills.map((skill) => (
-        <div key={skill.name}>
+       {skills.backendSkills.map((skill, index) => (
+        <div key={`backend-${index}`}>
          <div className="flex justify-between mb-1 items-center">
           <div className="flex items-center">
-           {skill.icon}
-           <span className="text-gray-400">{translateSkill(skill.name)}</span>
+           {getIconComponent(skill.icon)}
+           <span className="text-gray-400">{skill.name}</span>
           </div>
           <span className="text-blue-700 font-bold">{skill.percentage}%</span>
          </div>
@@ -203,12 +213,12 @@ export default function Skills() {
       </div>
 
       <div className="space-y-4">
-       {electricElectronicSkills.map((skill) => (
-        <div key={skill.name}>
+       {skills.electricElectronicSkills.map((skill, index) => (
+        <div key={`electric-${index}`}>
          <div className="flex justify-between mb-1 items-center">
           <div className="flex items-center">
-           {skill.icon}
-           <span className="text-gray-400">{translateSkill(skill.name)}</span>
+           {getIconComponent(skill.icon)}
+           <span className="text-gray-400">{skill.name}</span>
           </div>
           <span className="text-blue-700 font-bold">{skill.percentage}%</span>
          </div>

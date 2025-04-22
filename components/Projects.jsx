@@ -108,7 +108,7 @@ export default function Projects() {
    images: [],
    description: getProjectInfo(3, 'description'),
    technologies: ["React", "Next.js", "Tailwind CSS", "Responsive Design"],
-   demoLink: "https://omerhalisdemir.xyz",
+   demoLink: "/",
    githubLink: "https://github.com/omerhd34/omerhalisdemir.xyz"
   }
  ];
