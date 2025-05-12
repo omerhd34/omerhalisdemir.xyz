@@ -1,11 +1,13 @@
+// pages/api/skills.js
+
 import mysql from "mysql2/promise";
 
 export default async function handler(req, res) {
-  // Kullanıcının istediği dili al (varsayılan: tr)
+  // Get user's requested language (default: tr)
   const { lang = "tr" } = req.query;
 
   try {
-    // MySQL bağlantısını oluştur
+    // Create MySQL connection
     const connection = await mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
@@ -13,7 +15,7 @@ export default async function handler(req, res) {
       database: process.env.DB_NAME,
     });
 
-    // Dil seçimine göre tablo adlarını belirle
+    // Determine table names based on language selection
     const tables = {
       tr: {
         categories: "kategoriler",
@@ -37,14 +39,14 @@ export default async function handler(req, res) {
       },
     };
 
-    // Geçerli dil seçeneği kontrolü
+    // Check for valid language option
     if (!tables[lang]) {
-      return res.status(400).json({ error: "Desteklenmeyen dil seçeneği" });
+      return res.status(400).json({ error: "Unsupported language option" });
     }
 
     const table = tables[lang];
 
-    // Sorgu oluştur
+    // Create query
     const query = `
       SELECT 
         c.${table.categoryId},
@@ -61,17 +63,17 @@ export default async function handler(req, res) {
         c.${table.categoryId}, s.${table.skillId}
     `;
 
-    // Sorguyu çalıştır
+    // Execute query
     const [rows] = await connection.execute(query);
 
-    // Verileri frontend'in beklediği formata dönüştür
+    // Transform data to the format expected by frontend
     const result = {
       frontendSkills: [],
       backendSkills: [],
       electricElectronicSkills: [],
     };
 
-    // Verileri kategorilere göre ayır
+    // Separate data by categories
     rows.forEach((row) => {
       const skillItem = {
         name: row[table.skillName],
@@ -79,7 +81,7 @@ export default async function handler(req, res) {
         icon: row[table.skillIcon],
       };
 
-      // Kategori ID'sine göre ilgili diziye ekle
+      // Add to the appropriate array based on category ID
       if (row[table.categoryId] === 1) {
         result.frontendSkills.push(skillItem);
       } else if (row[table.categoryId] === 2) {
@@ -89,15 +91,15 @@ export default async function handler(req, res) {
       }
     });
 
-    // Bağlantıyı kapat
+    // Close connection
     await connection.end();
 
-    // Başarılı yanıt döndür
+    // Return successful response
     res.status(200).json(result);
   } catch (error) {
-    console.error("API hatası:", error);
+    console.error("API error:", error);
     res.status(500).json({
-      error: "Veritabanı sorgusu başarısız oldu",
+      error: "Database query failed",
       details: error.message,
     });
   }

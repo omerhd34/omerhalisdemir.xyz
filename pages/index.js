@@ -1,14 +1,14 @@
 import Head from "next/head";
-import { LanguageProvider } from "../components/LanguageContext";
-import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
-import About from "../components/About";
-import Skills from "../components/Skills";
-import Experience from "../components/Experience";
-import Projects from "../components/Projects";
-import Contact from "../components/Contact";
-import Footer from "../components/Footer";
-import Divider from "../components/Divider";
+import { LanguageProvider } from "../components/LanguageContext/LanguageContext";
+import Navbar from "../components/Navbar/index";
+import Hero from "../components/Hero/index";
+import About from "../components/About/index";
+import Skills from "../components/Skills/index";
+import Experience from "../components/Experience/index";
+import Projects from "../components/Projects/index";
+import Contact from "../components/Contact/index";
+import Footer from "../components/Footer/index";
+import Divider from "../components/Divider/Divider";
 
 export default function Home() {
   return (

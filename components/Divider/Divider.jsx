@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import icon from '../public/icon.png';
+import icon from '../../public/icon.png';
 import PropTypes from 'prop-types';
 
 const Divider = ({ className = "" }) => {
@@ -43,11 +43,11 @@ const Divider = ({ className = "" }) => {
       </div>
      </button>
 
-     <div className="absolute right-0 w-1/3 flex items-center justify-end space-x-3 flex-row-reverse">
-      <div className="h-3 w-3 rounded-full bg-blue-700"></div>
-      <div className="h-2 w-2 rounded-full bg-blue-600"></div>
-      <div className="h-1 w-1 rounded-full bg-blue-500"></div>
+     <div className="absolute right-0 w-1/3 flex items-center justify-end">
       <div className="flex-grow h-px bg-gradient-to-l from-blue-500 to-transparent"></div>
+      <div className="ml-3 h-1 w-1 rounded-full bg-blue-500"></div>
+      <div className="ml-3 h-2 w-2 rounded-full bg-blue-600"></div>
+      <div className="ml-3 h-3 w-3 rounded-full bg-blue-700"></div>
      </div>
     </div>
    </div>
