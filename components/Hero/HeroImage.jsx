@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import img1 from '../../public/imgg.jpg';
+import img1 from '../../public/img.jpg';
 
 export default function HeroImage({ isHovered, onMouseEnter, onMouseLeave }) {
  return (
